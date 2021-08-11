@@ -4,7 +4,7 @@
 static int mymodule_init(void) // module initialization function
 {
 	printk("welcome to the hello world module\n");
-	return 1; // always return 1
+	return 0; // always return 0 to tell the all the resources user asked for kernel provided those completely
 }
 
 static void mymodule_exit(void) // module exit function no return value
