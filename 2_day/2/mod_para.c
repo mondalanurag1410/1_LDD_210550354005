@@ -4,7 +4,7 @@
 
 static int value = 10; // initialize variable
 
-module_param(value,int,S_IRUGO); // taking variable as command line argument
+module_param(value,int,S_IRUSR | S_IWUSR); // taking variable as command line argument
 
 static int my_mod_para_init(void) // initialize module function
 {
