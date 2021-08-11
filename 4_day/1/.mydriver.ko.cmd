@@ -1,0 +1,1 @@
+cmd_/home/pi/device_driver/assignment/4_day/1/mydriver.ko := ld -r  -EL  --build-id=sha1  -T scripts/module.lds -o /home/pi/device_driver/assignment/4_day/1/mydriver.ko /home/pi/device_driver/assignment/4_day/1/mydriver.o /home/pi/device_driver/assignment/4_day/1/mydriver.mod.o;  true
