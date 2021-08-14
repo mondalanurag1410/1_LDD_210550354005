@@ -36,40 +36,28 @@ long my_ioctl_fn(struct file *file_ioctl, unsigned int cmd,unsigned long arg)
 	int op1,op2;
 	struct operator *data;
 	char u_buff[20];
+	data = (struct operator *)u_buff;
+	copy_from_user(u_buff,(struct operator *)arg,sizeof(struct operator));
+	op1 = data->num1;
+	op2 = data->num2;
 	switch(cmd)
 	{
 		case ADD:printk("Addition operation begin\n");
-			 data = (struct operator *)u_buff;
-			 copy_from_user(u_buff,(struct operator *)arg,sizeof(struct operator));
-			 op1 = data->num1;
-			 op2 = data->num2;
 			 int add_result = op1 + op2;
 			 printk("the result of addtion: %d\n",add_result);
 			 return 0;
 			 break;
 		case SUB:printk("Subtraction operation begin\n");
-			 data = (struct operator *)u_buff;
-			 copy_from_user(u_buff,(struct operator *)arg,sizeof(struct operator));
-			 op1 = data->num1;
-			 op2 = data->num2;
 			 int sub_result = op1-op2;
 			 printk("the result of subtraction: %d\n",sub_result);
 			 return 0;
 			 break;
 		case MUL:printk("multiplication operation begin\n");
-			 data = (struct operator *)u_buff;
-			 copy_from_user(u_buff,(struct operator *)arg,sizeof(struct operator));
-			 op1 = data->num1;
-			 op2 = data->num2;
-			 int mul_result = op1*op2;
+			 int mul_result =  op1*op2;
 			 printk("the result of multiplication: %d\n",mul_result);
 			 return 0;
 			 break;
 		case DIV:printk("division operation begin\n");
-			 data = (struct operator *)u_buff;
-			 copy_from_user(u_buff,(struct operator *)arg,sizeof(struct operator));
-			 op1 = data->num1;
-			 op2 = data->num2;
 			 int div_result = op1/op2;
 			 printk("the result of division: %d\n",div_result);
 			 return 0;
@@ -94,8 +82,8 @@ static int ioctl_driver_on(void)
 {
 	printk("welcome to ioctl based calculator driver module\n");
 	int reg_result;
-	int major,minor =0;
-	reg_result = alloc_chrdev_region(&ioctl_cal_dn,minor,1,"MyIoctlCalDriver");
+	int major,minor;
+	reg_result = alloc_chrdev_region(&ioctl_cal_dn,0,1,"MyIoctlCalDriver");
 	if(reg_result < 0)
 	{
 		printk("Driver not allocated any region by kernel\n");
@@ -103,7 +91,8 @@ static int ioctl_driver_on(void)
 	}
 
 	major = MAJOR(ioctl_cal_dn);
-	printk("the driver is allocated region by the kernel with major number: %d and minor number: %d",major,minor);
+	minor = MINOR(ioctl_cal_dn);
+	printk("the driver is allocated region by the kernel with major number: %d and minor number: %d\n",major,minor);
 
 	MyIoctlCalDevice = cdev_alloc();
 	MyIoctlCalDevice->ops = &calop;
