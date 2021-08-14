@@ -327,7 +327,7 @@ static int calcu_mod_on(void)
 	}
 
 	major = MAJOR(my_device_number); // finding the major number
-	printk(KERN_ALERT "the allocated driver having the major number: %d\n",major);
+	printk(KERN_ALERT "the allocated driver having the major number: %d\n\nminor no 0: for AddDev\nminor no 1: for SubDev\nminor no 2: for MulDev\nminor no 3: for DivDev\n",major);
 	
 	mdn_add = MKDEV(major,0);
 	mdn_sub = MKDEV(major,1);
