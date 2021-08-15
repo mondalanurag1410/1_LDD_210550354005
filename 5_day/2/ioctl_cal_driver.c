@@ -120,6 +120,8 @@ static int ioctl_driver_on(void)
 	minor = MINOR(ioctl_cal_dn);
 
 	printk("the driver is allocated region by the kernel with major number: %d and minor number: %d\n",major,minor);
+	printk("\nFor ioctl based calculation driver expected the folloing device:\nMyIoctlCalDevice\n");
+
 	/*allocate chacter device to do certain operations dynamically*/
 	MyIoctlCalDevice = cdev_alloc();
 	MyIoctlCalDevice->ops = &calop;
