@@ -8,5 +8,5 @@ clean:
 	make -C $(KDIR) M=$(PWD) clean
 
 install:
-	make -C $(KDIR) M=$(PWD) modules_install
-	depmod -a
+	make -C $(KDIR) M=$(PWD) modules_install #for shared object
+	depmod -a #for using modprobe

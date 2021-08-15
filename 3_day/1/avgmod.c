@@ -1,3 +1,8 @@
+/*Write a module program Add.c that exports the add functionality using the EXPORT_SYMBOL macro. 
+ * Write another module program Average.c that calls the add function, 
+ * exported by the Add Module and computes the average of 2 numbers. 
+ * Manually implement and demonstrate this functionality.*/
+
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/moduleparam.h>
