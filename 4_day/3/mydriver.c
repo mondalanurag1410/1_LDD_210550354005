@@ -1,3 +1,6 @@
+/*Write a character driver to dynamically allocate a maj, min no pair from the kernel. 
+ * and perform the raed write open and close functionality*/
+
 #include <linux/cdev.h>
 #include <linux/fs.h>
 #include <linux/kdev_t.h>
@@ -5,7 +8,6 @@
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/uaccess.h>
-//#include <asm/uaccess.h>
 
 int my_open_fn(struct inode *inode, struct file *file_d);
 int my_release_fn(struct inode *inode,struct file *file_d);
@@ -83,17 +85,13 @@ int my_release_fn(struct inode *inode, struct file *file_d)
 
 
 
-struct cdev *MyCharDriver;
+struct cdev *MyCharDevice;
 
 dev_t my_driver_no;
 
 static int my_driver_mod_init(void)
 {
 	int major,minor;
-//	my_driver_no = MKDEV(255,0);
-//	major = MAJOR(my_driver_no);
-//	minor = MINOR(my_driver_no);
-	
 	printk("module logging in\n");
 
 	int res = alloc_chrdev_region(&my_driver_no,0,1,"MyCharDriver");
@@ -108,19 +106,17 @@ static int my_driver_mod_init(void)
 	}
 
 	printk("my charcter driver got the region with major no %d and minor no %d\n",major,minor);
+	printk("\nFor successfully operate the driver expent the following device:\nMyCharDevice\n")
+	MyCharDevice = cdev_alloc();
+	MyCharDevice->ops = &op;
 
-	MyCharDriver = cdev_alloc();
-	MyCharDriver->ops = &op;
-
-	int result = cdev_add(MyCharDriver,my_driver_no,1);
+	int result = cdev_add(MyCharDevice,my_driver_no,1);
 
 	if(result < 0)
 	{
 		printk("Driver not recognised by kernel\n");
-		unregister_chrdev_region(my_driver_no,1);
 		return -1;
 	}
-
 	return 0;
 }
 
@@ -129,7 +125,7 @@ static void my_driver_mod_exit(void)
 	printk("module going to be logging off\n");
 	unregister_chrdev_region(my_driver_no,1);
 	printk("Driver now unregister\n");
-	cdev_del(MyCharDriver);
+	cdev_del(MyCharDevice);
 	printk("kernel forgot my chracter driver\n");
 }
 
