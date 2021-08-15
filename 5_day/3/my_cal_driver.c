@@ -1,3 +1,11 @@
+/*	Write a calculator driver in the kernel which performs the following:
+ *
+ *	a.Create 4 Device Numbers – Each device number depicts a specific calculation operation like add, subtract, multiply and divide
+ *	b.Implement 8 methods – Read_Add, Read_Sub, Read_Mul, Read_Div, Write_Add, Write_Sub, Write_Mul and Write_Div
+ *	c.In user space, create 4 device nodes for the 4 device numbers created – /dev/AddDev, /dev/SubDev, /dev/MulDev, /dev/DivDev
+ *	d.Write 4 user applications in the user space to test the above. If /dev/AddDev application is run, it should write 2 numbers to the kernel and the kernel should add it and return the sum in the subsequent read.
+*/
+
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/kdev_t.h>
@@ -6,13 +14,15 @@
 #include <linux/cdev.h>
 #include <linux/uaccess.h>
 
+/////////////////////////////////////////////////////////////////////////////////
+/*srction for addition start*/
 /*function declaration of add functionality*/
 int open_add(struct inode *inode, struct file *file_op_add);
 int release_add(struct inode *inode, struct file *file_op_add);
 ssize_t write_add(struct file *file_op_add,const char __user *u_buff,size_t count,loff_t *offp );
 ssize_t read_add(struct file *file_op_add,char __user *u_buff, size_t count, loff_t *offp);
 
-static int add_result;
+static int add_result; // for storing the result of addition
 /*add operation structure*/
 struct file_operations fop_add=
 {
@@ -35,9 +45,9 @@ ssize_t read_add(struct file *file_op_add,char __user *u_buff,size_t count,loff_
 {
 	ssize_t sdata;
 	int result;
-	const int *re  = &add_result;
-	result = copy_to_user(u_buff,re,sizeof(add_result));
-	if(result >= 0)
+	const int *re  = &add_result; // taking the addressess of add_result
+	result = copy_to_user(u_buff,re,sizeof(add_result)); // the result of addition com=py from kernel space to user
+	if(result >= 0) // comdition to check whether copy operation successful or not
 	{
 		printk("successfully send the result\n");
 		sdata = sizeof(add_result);
@@ -50,20 +60,21 @@ ssize_t read_add(struct file *file_op_add,char __user *u_buff,size_t count,loff_
 	}
 }
 
-
+/*adiition write function defination*/
 ssize_t write_add(struct file *file_op_add, const char __user *u_buff, size_t count, loff_t *offp)
 {
 	int result;
-	int k_buff[2];
+	int k_buff[2]; //initialize variable to where two integers from user space will store
 	ssize_t rdata;
-	result = copy_from_user((char *)k_buff,u_buff,count);
-	if(result >= 0)
+	result = copy_from_user((char *)k_buff,u_buff,count); // copy from user
+	if(result >= 0) // condition for checking whether copy from user done or not
 	{
-		printk("the data from user are:%d and %d\n",(int)k_buff[0],(int)k_buff[1]);
-		add_result = (int)k_buff[0] + (int)k_buff[1];
+		printk("the data from user are:%d and %d\n",(int)k_buff[0],(int)k_buff[1]); // print the two integer value 
+											    //collecting from user withinteger type cast
+		add_result = (int)k_buff[0] + (int)k_buff[1]; 
 		printk("the addition result is: %d and its send to user space\n",add_result);
 		rdata = count;
-		return rdata;
+		return rdata; //send the amount of data cpoied
 	}
 	else
 	{
@@ -327,8 +338,10 @@ static int calcu_mod_on(void)
 	}
 
 	major = MAJOR(my_device_number); // finding the major number
-	printk(KERN_ALERT "the allocated driver having the major number: %d\n\nminor no 0: for AddDev\nminor no 1: for SubDev\nminor no 2: for MulDev\nminor no 3: for DivDev\n",major);
+	printk(KERN_ALERT "the allocated driver having the major number: %d\n\nminor no 0: for AddDev device\nminor no 1: for SubDev device\nminor no 2: for MulDev device\nminor no 3: for DivDev device\n",major);
 	
+	printk("\nFor calculation purpose deiver expected the following device with its major and minor number:\naddition: AddDev\nsubtraction: SubDev\nmultiplication: MulDev\ndivision: DivDev\n");
+	/*making separate device number with same major number*/
 	mdn_add = MKDEV(major,0);
 	mdn_sub = MKDEV(major,1);
 	mdn_mul = MKDEV(major,2);
@@ -346,8 +359,8 @@ static int calcu_mod_on(void)
 	DivDev = cdev_alloc();
 	DivDev->ops = &fop_div;
 
-	int result_add = cdev_add(AddDev,mdn_add,1);
-	if(result_add <0 )
+	int result_add = cdev_add(AddDev,mdn_add,1); // add AddDev device to the kernel section
+	if(result_add <0 ) // condition whether addition of device successfull or not
 	{
 		printk(KERN_ALERT "driver not allocated by kernel\n");
 		return -1;
@@ -380,11 +393,14 @@ static int calcu_mod_on(void)
 static void calcu_mod_off(void)
 {
 	printk("your driver going to logging off\n");
+	/*delete each device location separately*/
 	cdev_del(AddDev);
 	cdev_del(SubDev);
 	cdev_del(MulDev);
 	cdev_del(DivDev);
+	cdev_del(my_device_number);
 	printk("all devices are logging off\n");
+	/*unregister from the kernel space*/
 	unregister_chrdev_region(my_device_number, 4);
 	printk("your driver log off\n");
 }
