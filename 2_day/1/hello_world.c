@@ -1,3 +1,6 @@
+/*Write the Hello World Module Program. Write the Makefile to compile the Module Program. 
+ * Compile and load the Module into the Kernel*/
+
 #include <linux/init.h> // header file for modules
 #include <linux/module.h>
 

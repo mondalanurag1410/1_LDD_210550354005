@@ -1,3 +1,10 @@
+/*Write a module program and pass 2 integer type parameters and 
+ * 1 string type module parameters to it. 
+ * If the string type parameter is add, the module should call a function add() 
+ * and calculate the sum of the 2 integer type parameters. 
+ * Similarly, sub, mul and div should be 
+ * implemented through separate handler functions and perform respective operations */
+
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/moduleparam.h> // header file for module parameter operation
@@ -8,7 +15,7 @@ static char* op= "hi";
 static int num1 = 0;
 static int num2 = 0;
 
-/*take module parameter commmand line arguments*/
+/*take module parameter commmand line arguments with permissions*/
 module_param(op, charp, S_IRUSR | S_IWUSR);
 module_param(num1, int, S_IRUSR | S_IWUSR);
 module_param(num2, int, S_IRUSR | S_IWUSR);

@@ -1,10 +1,13 @@
+/*Write a Module program and pass integer type module parameters to it. 
+ * Print/Display the module parameters on the screen*/
+
 #include <linux/module.h>
 #include <linux/moduleparam.h> // header file for module parameter
 #include <linux/init.h>
 
 static int value = 10; // initialize variable
 
-module_param(value,int,S_IRUSR | S_IWUSR); // taking variable as command line argument
+module_param(value,int,S_IRUSR | S_IWUSR); // taking variable as command line argument with permission
 
 static int my_mod_para_init(void) // initialize module function
 {
