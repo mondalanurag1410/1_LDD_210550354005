@@ -1,3 +1,12 @@
+/*Write a character driver that implements the ioctl functionality 
+ * to demonstrate the calculator functionality. The user application should 
+ * take input from the user and pass corresponding operations - ‘+’,’-‘,’*’,’/’ 
+ * to the kernel module using ioctl. Based on the operation, 
+ * ioctl should perform the add, sub, mul and div functions and 
+ * print results in the kernel Modify the above program to pass a structure 
+ * to using ioctl to the kernel module. 
+ * The structure should have 3 elements: integer1, integer2, character. Test and conclude*/
+
 /*header files*/
 #include <linux/cdev.h>
 #include <linux/fs.h>

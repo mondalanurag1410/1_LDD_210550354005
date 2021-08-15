@@ -1,3 +1,10 @@
+/*Write a character driver that implements the ioctl functionality 
+ * to demonstrate the calculator functionality. The user application 
+ * should take input from the user and pass corresponding operations - ‘+’,’-‘,’*’,’/’ 
+ * to the kernel module using ioctl. Based on the operation, 
+ * ioctl should perform the add, sub, mul and div functions 
+ * and print results in the kernel*/
+
 #include <linux/cdev.h>
 #include <linux/fs.h>
 #include <linux/kdev_t.h>
@@ -96,6 +103,7 @@ static int ioctl_driver_on(void)
 	major = MAJOR(ioctl_cal_dn); 
 	minor = MINOR(ioctl_cal_dn);
 	printk("the driver is allocated region by the kernel with major number: %d and minor number: %d\n",major,minor);
+	printk("\nFor ioctl based calculator driver, driver expected the following device:\nMyIoctlCalDevice\n");
 
 	MyIoctlCalDevice = cdev_alloc();
 	MyIoctlCalDevice->ops = &calop; //pionting to the file operation specified to the character device
