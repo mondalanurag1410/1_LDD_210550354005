@@ -19,7 +19,8 @@ int my_release_fn(struct inode *inode,struct file *file_d);
 ssize_t my_read_fn(struct file *file_d, char __user *u_buff, size_t count, loff_t *offp);
 long my_ioctl_fn(struct file *file_d,unsigned int cmd,unsigned long arg);
 
-static char k_buff[100] ="data from kernel";
+static char k_buff[100];
+static int delay_trigger = 0;
 /*file operation structure which function we expect in driver*/
 struct file_operations op ={
 	.owner = THIS_MODULE,
@@ -37,6 +38,8 @@ int my_open_fn(struct inode *inode, struct file *file_d)
 /*ioctl function*/
 long my_ioctl_fn(struct file *file_d, unsigned int cmd,unsigned long arg)
 {
+	char *p = "data from kernel";
+	int i =0;
 	unsigned long timeout;
 	timeout = jiffies + (arg * HZ); //determine the amount of delay user want using jiffies
 	while(time_before(jiffies,timeout)) // condition that current jiffies value is higher that timeout 
@@ -44,14 +47,20 @@ long my_ioctl_fn(struct file *file_d, unsigned int cmd,unsigned long arg)
 	{
 		continue;
 	}
+	while(p[i] != '\0')
+	{
+		*(k_buff+i) = p[i];
+		i++;
+	}
+	k_buff[i] = '\0';
 	printk("the data send from kernel to user: %s\n",k_buff);
+	delay_trigger++;
 	return 0;
 }
 
 /*Read function defination*/
 ssize_t my_read_fn(struct file *file_d, char __user *u_buff, size_t count, loff_t *offp)
 {
-//	const char *k_buff = "this data you are reading from kernel";
 	int re,i = 0;
 	ssize_t amtdata;
 	printk("data got for send to user is: %s\n",k_buff);
@@ -60,19 +69,25 @@ ssize_t my_read_fn(struct file *file_d, char __user *u_buff, size_t count, loff_
 		i++;
 	}
 	printk("total length of data is: %d\n",i);
-	re = copy_to_user(u_buff,(const char *)k_buff, i);
+	if(delay_trigger == 1)
+	{	
+		re = copy_to_user(u_buff,(const char *)k_buff, i);
 
-	if(re >= 0) //condition to check read done successfully done or not
-	{
-		printk("total data successfully copy from kernel to user\n");
-		amtdata = i;
-		return amtdata;
+		if(re >= 0) //condition to check read done successfully done or not
+		{	
+			printk("total data successfully copy from kernel to user\n");
+			amtdata = i;
+			delay_trigger = 0;
+			return amtdata;
+		}
+		else
+		{
+			printk("error in reading\n");
+			delay_trigger = 0;
+			return -1;
+		}
 	}
-	else
-	{
-		printk("error in reading\n");
-		return -1;
-	}
+	return amtdata;
 }
 
 /*release function defination*/

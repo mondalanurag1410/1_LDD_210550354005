@@ -22,8 +22,8 @@ int main()
 	}
 	printf("Ther data we got from the kernel is:\n\n");
 	result = read(fd,k_rd_buff,50); // initiate read system call
-	ioctl(fd,DATA_DELAY,delay_min); // initiate ioctl system call with delay operation
-	while(result != 16) // condition to check wheather data is totally available or not
+	ioctl(fd,DATA_DELAY,delay_min);
+	while(result != 16)
 	{
 		continue;
 	}
